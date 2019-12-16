@@ -18,7 +18,13 @@
         else if(typeof params !== "undefined" &&
                 params !== null &&
                 typeof params.path === "string") {
-            this.serial = new SerialPort.SerialPort(params.path,{baudRate: 115200}, false);
+            this.serial = new SerialPort(
+                params.path,
+                {
+                    baudRate: 115200,
+                    autoOpen: false
+                }
+            );
         } else {
             throw new Error("Must either specify a path or a constructed serial port");
         }
@@ -69,20 +75,21 @@
 
         flush: function(cb) {
             var self = this;
-            if(self.isConnected()) {
-                self.serial.flush(function(result) {
-                    if(typeof cb ==="function") {
-                        cb(result);
-                    }
-                });
-            } else {
-                throw new Error("Can't flush when not connected");
-            }
+            // this doesnt seem to do anything any more
+            // if(self.isConnected()) {
+            //     self.serial.flush(function(result) {
+            //         if(typeof cb ==="function") {
+            //             cb(result);
+            //         }
+            //     });
+            // } else {
+            //     throw new Error("Can't flush when not connected");
+            // }
         }, 
 
         isConnected: function() {
             var self = this;
-            return self.serial.isOpen();
+            return self.serial.isOpen;
         },
  
         disconnectUnsafe: function() {
@@ -116,7 +123,7 @@
 
         send: function(buffer) {
             var self = this;
-            self.serial.write(new Buffer(buffer),function(err) {
+            self.serial.write(Buffer.from(buffer),function(err) {
                 if(err) {
                     if(typeof self.errorCallback === 'function') {
                         var data = {buffer: buffer, nodeError: err};

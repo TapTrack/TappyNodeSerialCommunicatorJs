@@ -13,7 +13,7 @@ var MockDevice = function(mockSerial) {
 };
 
 var MockNodeSerial = function() {
-    this.opened = false;
+    this.isOpen = false;
     this.dataCb = function(){};
     this.device = new MockDevice(this);
 };
@@ -27,7 +27,7 @@ MockNodeSerial.prototype.on = function(ev,cb) {
 
 MockNodeSerial.prototype.open = function(cb) {
     var self = this;
-    self.opened = true;
+    self.isOpen = true;
     if(typeof cb === "function") {
         cb(); 
     }
@@ -35,23 +35,13 @@ MockNodeSerial.prototype.open = function(cb) {
 
 MockNodeSerial.prototype.close = function(cb) {
     var self = this;
-    self.opened = false;
+    self.isOpen = false;
     if(typeof cb === "function") {
         cb(); 
     }
 };
 
-MockNodeSerial.prototype.isOpen = function() {
-    var self = this;
-    return self.opened;
-};
-
-MockNodeSerial.prototype.flush = function(cb) {
-    var self = this;
-    if(typeof cb === "function") {
-        cb();
-    }
-};
+// MockNodeSerial.prototype.isOpen = false;
 
 MockNodeSerial.prototype.write = function(buffer, cb) {
     var self = this;
@@ -122,39 +112,6 @@ describe("Test connection status", function() {
     });
 });
 
-describe("Test flushing", function() {
-    it("should throw when flush is called while not connected",function() {
-        var mockSerial = new MockNodeSerial();
-        var wrapper = new NodeSerialComm({serial: mockSerial});
-        var callTest= function() { 
-            wrapper.flush(function() {});
-        };
-        expect(callTest).toThrow();
-    });
-
-    it("should not throw when not connected",function() {
-        var mockSerial = new MockNodeSerial();
-        var wrapper = new NodeSerialComm({serial: mockSerial});
-        wrapper.connect();
-        var callTest= function() { 
-            wrapper.flush(function() {});
-        };
-        expect(callTest).not.toThrow();
-    });
-
-    it("should call flush callback after flushing",function() {
-        var mockSerial = new MockNodeSerial();
-        mockSerial.open();
-        var wrapper = new NodeSerialComm({serial: mockSerial});
-        wrapper.connect();
-        var calledTest = false;
-        wrapper.flush(function() {
-            calledTest = true;
-        });
-        expect(calledTest).toEqual(true);
-    });
-});
-
 describe("Test rx/tx operations",function() {
     it("should forward information received from the device",function() {
         var testData = [0x44,0x55,0x66,0x77,0x88];
@@ -168,7 +125,7 @@ describe("Test rx/tx operations",function() {
         });
         wrapper.connect();
         var device= mockSerial.getDevice();
-        device.sendData(new Buffer(new Uint8Array(testData)));
+        device.sendData(Buffer.from(new Uint8Array(testData)));
         expect(gotTestData).toEqual(true);
     });
 });
