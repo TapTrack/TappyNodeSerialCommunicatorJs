@@ -18,13 +18,7 @@
         else if(typeof params !== "undefined" &&
                 params !== null &&
                 typeof params.path === "string") {
-            this.serial = new SerialPort(
-                params.path,
-                {
-                    baudRate: 115200,
-                    autoOpen: false
-                }
-            );
+            this.serial = new SerialPort(params.path,{baudRate: 115200, autoOpen: false});
         } else {
             throw new Error("Must either specify a path or a constructed serial port");
         }

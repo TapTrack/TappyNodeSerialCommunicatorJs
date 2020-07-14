@@ -29,7 +29,7 @@ MockNodeSerial.prototype.open = function(cb) {
     var self = this;
     self.isOpen = true;
     if(typeof cb === "function") {
-        cb(); 
+        cb();
     }
 };
 
@@ -41,7 +41,12 @@ MockNodeSerial.prototype.close = function(cb) {
     }
 };
 
-// MockNodeSerial.prototype.isOpen = false;
+MockNodeSerial.prototype.flush = function(cb) {
+    var self = this;
+    if(typeof cb === "function") {
+        cb();
+    }
+};
 
 MockNodeSerial.prototype.write = function(buffer, cb) {
     var self = this;

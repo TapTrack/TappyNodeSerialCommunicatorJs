@@ -38,3 +38,9 @@ tappy.connect(function() {
     tappy.sendMessage(cmd);
 });
 ```
+
+
+### Notes
+As of version 2.0.0, this is now based on serialport version 9.0.0, which has a slightly different API than 
+version 3.1.2 that was previously used. The primary change that will affect custom serial ports written used
+with this communicator is that isOpen is now a boolean value on the serial port object instead of a method.
